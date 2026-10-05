@@ -1,22 +1,19 @@
 import type { Metadata } from "next";
-import { Inter, Outfit } from "next/font/google";
+import { Poppins } from "next/font/google";
 import "./globals.css";
 import { Navbar } from "@/components/ui/navbar";
 import SmoothScrolling from "@/components/ui/smooth-scrolling";
 
-const inter = Inter({
-  variable: "--font-inter",
+const poppins = Poppins({
+  variable: "--font-poppins",
   subsets: ["latin"],
-});
-
-const outfit = Outfit({
-  variable: "--font-outfit",
-  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "TalentGraph AI | ADA",
-  description: "Adaptive Decision Assistant for TalentGraph AI",
+  title: "TalentGraph AI | ADA — Evidence-Driven Hiring",
+  description: "Hire the engineer, not the resume. Verify technical claims against GitHub commits.",
 };
 
 export default function RootLayout({
@@ -27,9 +24,9 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${outfit.variable} h-full antialiased`}
+      className={`${poppins.variable} font-sans h-full antialiased dark`}
     >
-      <body className="min-h-full flex flex-col font-sans">
+      <body className="min-h-full flex flex-col font-sans bg-black text-white selection:bg-red-500/20 selection:text-red-400">
         <SmoothScrolling>
           <Navbar />
           {children}

@@ -1,16 +1,15 @@
-import { Component as AdaHeroSection } from "@/components/ui/horizon-hero-section";
-import { GalaxyCardsSection } from "@/components/ui/galaxy-cards-section";
-import { BrandEndingSection } from "@/components/ui/brand-ending-section";
+import { HeroSection } from "@/components/ui/hero-section";
+import { FeaturesSection } from "@/components/ui/features-section";
+import { CtaSection } from "@/components/ui/cta-section";
 import { Footer } from "@/components/ui/footer";
 
 export default function Home() {
   return (
-    <main className="bg-black">
-      <AdaHeroSection />
-      <GalaxyCardsSection />
-      <BrandEndingSection />
+    <main className="bg-black text-white selection:bg-red-500/30">
+      <HeroSection />
+      <FeaturesSection />
+      <CtaSection />
       <Footer />
     </main>
   );
 }
-
