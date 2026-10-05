@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { ChevronDown, Menu, ArrowUpRight } from "lucide-react";
 
 const features = [
@@ -14,7 +15,15 @@ const features = [
 ];
 
 export function Navbar() {
+  const pathname = usePathname();
   const [hoveredFeature, setHoveredFeature] = useState(features[0].name);
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  // Do not render marketing navbar on the dashboard page
+  if (pathname && pathname.startsWith("/audit")) {
+    return null;
+  }
+
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-transparent backdrop-blur-md">
       <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
@@ -115,20 +124,53 @@ export function Navbar() {
           </div>
         </div>
 
-        {/* Action Button */}
-        <Link
-          href="#login"
-          className="hidden md:block px-5 py-2 text-gray-900 text-sm font-semibold rounded-full hover:opacity-90 transition-opacity"
-          style={{ backgroundColor: "#e2a9f1" }}
-        >
-          Login
-        </Link>
+        {/* Login Action Button */}
+        <div className="flex items-center gap-3">
+          <Link
+            href="/audit"
+            id="landing-login-btn"
+            className="px-5 py-2 text-sm font-semibold rounded-full bg-white text-black hover:bg-neutral-200 transition-all duration-200 shadow-md hover:scale-105 active:scale-95 flex items-center gap-1.5"
+          >
+            <span>Login</span>
+          </Link>
 
-        {/* Mobile Menu */}
-        <button className="md:hidden p-2 text-gray-400 hover:text-white transition-colors">
-          <Menu className="w-5 h-5" />
-        </button>
+          {/* Mobile Menu Toggle */}
+          <button 
+            onClick={() => setMobileOpen(!mobileOpen)}
+            className="md:hidden p-2 text-gray-400 hover:text-white transition-colors"
+            aria-label="Toggle mobile menu"
+          >
+            <Menu className="w-5 h-5" />
+          </button>
+        </div>
       </div>
+
+      {/* Mobile Menu Dropdown */}
+      {mobileOpen && (
+        <div className="md:hidden bg-[#111111]/95 backdrop-blur-xl border-b border-white/10 px-6 py-4 flex flex-col gap-3">
+          <Link 
+            href="/" 
+            onClick={() => setMobileOpen(false)} 
+            className="text-gray-200 hover:text-white text-sm py-1.5 font-medium"
+          >
+            Home
+          </Link>
+          <Link 
+            href="/audit" 
+            onClick={() => setMobileOpen(false)} 
+            className="text-gray-200 hover:text-white text-sm py-1.5 font-medium"
+          >
+            Audit Platform
+          </Link>
+          <Link 
+            href="/audit" 
+            onClick={() => setMobileOpen(false)} 
+            className="mt-2 text-center py-2.5 rounded-full bg-white text-black font-semibold text-sm shadow-md"
+          >
+            Login
+          </Link>
+        </div>
+      )}
     </nav>
   );
 }

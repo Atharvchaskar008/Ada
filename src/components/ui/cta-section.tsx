@@ -82,3 +82,5 @@ export const BrandEndingSection = () => {
     </section>
   );
 };
+
+export const CtaSection = BrandEndingSection;

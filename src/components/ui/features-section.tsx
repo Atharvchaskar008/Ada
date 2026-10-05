@@ -157,3 +157,5 @@ export const GalaxyCardsSection = () => {
     </section>
   );
 };
+
+export const FeaturesSection = GalaxyCardsSection;
