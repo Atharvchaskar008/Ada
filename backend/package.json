@@ -1,0 +1,22 @@
+{
+  "name": "ada-backend",
+  "version": "1.0.0",
+  "description": "ADA — Telemetry Ingestion, Historical Git Discovery & Claim Verification Service",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "test": "node tests/discovery_attribution_precision.test.js"
+  },
+  "dependencies": {
+    "@google/generative-ai": "^0.24.1",
+    "@octokit/rest": "^21.1.1",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "mongoose": "^9.10.4",
+    "multer": "^2.4.0",
+    "pdf-parse": "^2.4.5"
+  }
+}
