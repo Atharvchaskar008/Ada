@@ -16,6 +16,11 @@ import {
   ExternalLink,
   GitCommit,
   Code2,
+  FolderGit2,
+  GitBranch,
+  Terminal,
+  Shield,
+  Check,
 } from "lucide-react";
 import jsPDF from "jspdf";
 
@@ -207,16 +212,16 @@ export function AuditDashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white font-sans pt-16">
-      {/* Top Header */}
-      <header className="border-b border-zinc-900 bg-black/95 backdrop-blur-md sticky top-0 z-20">
-        <div className="max-w-7xl mx-auto px-8 h-16 flex items-center justify-between">
+    <div className="min-h-screen bg-black text-white font-sans selection:bg-red-500/30">
+      {/* Top Header - Fixed at absolute top with zero empty space */}
+      <header className="sticky top-0 z-30 w-full border-b border-white/10 bg-black/85 backdrop-blur-2xl">
+        <div className="max-w-7xl mx-auto px-6 md:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Link
               href="/"
-              className="flex items-center gap-2 text-sm text-zinc-400 hover:text-white transition-colors"
+              className="flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium text-zinc-400 hover:text-white hover:bg-white/5 transition-all duration-200 border border-transparent hover:border-white/10"
             >
-              <ArrowLeft className="w-4 h-4" />
+              <ArrowLeft className="w-3.5 h-3.5" />
               <span>Back</span>
             </Link>
             <div className="h-4 w-px bg-zinc-800" />
@@ -224,69 +229,84 @@ export function AuditDashboard() {
               <span className="text-xl font-black tracking-tight text-red-500 font-mono">
                 ADA
               </span>
-              <span className="text-xs font-semibold uppercase tracking-wider text-zinc-300 bg-zinc-900 px-2.5 py-1 rounded-md border border-zinc-800">
-                Live Git Claim Screener
-              </span>
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider text-zinc-300 bg-zinc-900/90 border border-white/10 shadow-inner">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                <span>Live Git Screener</span>
+              </div>
             </div>
           </div>
+          {auditResult && (
+            <div className="hidden sm:flex items-center gap-2 text-xs font-mono text-zinc-400 bg-zinc-950 px-3 py-1.5 rounded-xl border border-white/10">
+              <span className="text-zinc-600">Candidate:</span>
+              <span className="text-white font-medium">@{auditResult.username}</span>
+            </div>
+          )}
         </div>
       </header>
 
       {/* Main Content Workspace */}
-      <main className="max-w-7xl mx-auto px-8 py-10">
+      <main className="max-w-7xl mx-auto px-6 md:px-8 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           {/* Left Panel: Candidate Intake & File Dropzone */}
-          <div className="lg:col-span-5 bg-zinc-950 border border-zinc-900 rounded-2xl p-8 space-y-7 shadow-xl">
+          <div className="lg:col-span-5 bg-gradient-to-b from-zinc-900/60 to-zinc-950/90 border border-white/10 backdrop-blur-xl rounded-2xl p-7 space-y-6 shadow-2xl">
             <div>
-              <h2 className="text-lg font-semibold text-white tracking-tight">Candidate Verification</h2>
+              <h2 className="text-lg font-bold text-white tracking-tight flex items-center gap-2">
+                <span>Candidate Verification</span>
+              </h2>
               <p className="text-xs text-zinc-400 mt-1.5 leading-relaxed">
-                Upload candidate resume PDF. Project repositories are discovered across historical commits and audited against live Git telemetry.
+                Upload resume PDF to audit claims against live GitHub telemetry and historical commit diffs.
               </p>
             </div>
 
             {/* GitHub Username Input */}
-            <div className="space-y-2.5">
-              <label className="text-xs font-medium text-zinc-300 flex items-center justify-between">
-                <span>GitHub Handle</span>
-                <span className="text-[11px] text-zinc-500 font-normal">Auto-detected if on resume</span>
+            <div className="space-y-2">
+              <label className="text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                GitHub Handle
               </label>
-              <input
-                type="text"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                placeholder="e.g. Atharvchaskar008"
-                className="w-full text-sm font-mono bg-black border border-zinc-800 rounded-xl px-4 py-3.5 text-white placeholder-zinc-700 focus:outline-none focus:border-red-500/80 transition-colors"
-              />
+              <div className="relative">
+                <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-500 font-mono text-sm">
+                  @
+                </span>
+                <input
+                  type="text"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  placeholder="Atharvchaskar008"
+                  className="w-full text-sm font-mono bg-black/70 border border-white/10 focus:border-red-500/80 rounded-xl pl-8 pr-4 py-3 text-white placeholder-zinc-700 focus:outline-none transition-all duration-200"
+                />
+              </div>
             </div>
 
             {/* PDF Upload Dropzone */}
-            <div className="space-y-2.5">
-              <label className="text-xs font-medium text-zinc-300">Resume PDF</label>
-              <label className="border-2 border-dashed border-zinc-800 hover:border-zinc-700 rounded-2xl p-8 flex flex-col items-center justify-center bg-black cursor-pointer transition-colors block text-center group">
+            <div className="space-y-2">
+              <label className="text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                Resume PDF
+              </label>
+              <label className="border-2 border-dashed border-white/10 hover:border-white/20 rounded-2xl p-7 flex flex-col items-center justify-center bg-black/50 hover:bg-black/80 cursor-pointer transition-all duration-300 block text-center group">
                 <input
                   type="file"
                   accept=".pdf"
                   onChange={handleFileChange}
                   className="hidden"
                 />
-                <div className="w-12 h-12 rounded-xl bg-zinc-900 flex items-center justify-center mb-3 group-hover:scale-105 transition-transform border border-zinc-800/80">
-                  <Upload className="w-6 h-6 text-zinc-400" />
+                <div className="w-12 h-12 rounded-xl bg-zinc-900/90 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-300 border border-white/10 shadow-lg">
+                  <Upload className="w-5 h-5 text-zinc-300 group-hover:text-white transition-colors" />
                 </div>
                 <span className="text-sm text-zinc-200 font-medium">
                   {fileName || "Select or drop resume PDF"}
                 </span>
-                <span className="text-xs text-zinc-500 mt-1.5">
-                  Direct project repository URLs are resolved automatically
-                </span>
               </label>
 
               {fileName && (
-                <div className="flex items-center justify-between text-xs px-4 py-2.5 bg-zinc-900 rounded-xl border border-zinc-800">
-                  <span className="text-zinc-200 truncate max-w-[240px] font-mono">{fileName}</span>
+                <div className="flex items-center justify-between text-xs px-4 py-2.5 bg-zinc-900/80 rounded-xl border border-white/10">
+                  <div className="flex items-center gap-2 truncate">
+                    <FileCode className="w-4 h-4 text-red-400 shrink-0" />
+                    <span className="text-zinc-200 truncate font-mono">{fileName}</span>
+                  </div>
                   <button
                     type="button"
                     onClick={handleClearFile}
-                    className="text-red-400 hover:text-red-300 text-xs font-medium transition-colors"
+                    className="text-red-400 hover:text-red-300 text-xs font-semibold transition-colors px-2 py-1 rounded hover:bg-red-950/40"
                   >
                     Remove
                   </button>
@@ -295,8 +315,9 @@ export function AuditDashboard() {
             </div>
 
             {error && (
-              <div className="p-4 rounded-xl bg-red-950/60 border border-red-900/80 text-xs text-red-400">
-                {error}
+              <div className="p-3.5 rounded-xl bg-red-950/40 border border-red-900/60 text-xs text-red-400 flex items-start gap-2.5">
+                <XCircle className="w-4 h-4 text-red-400 shrink-0 mt-0.5" />
+                <span>{error}</span>
               </div>
             )}
 
@@ -305,10 +326,10 @@ export function AuditDashboard() {
               <button
                 onClick={handleRunAudit}
                 disabled={isLoading}
-                className={`w-full py-4 rounded-xl text-sm font-semibold transition-all flex items-center justify-center gap-2.5 ${
+                className={`w-full py-3.5 rounded-xl text-sm font-semibold transition-all duration-200 flex items-center justify-center gap-2.5 shadow-xl ${
                   isLoading
-                    ? "bg-zinc-900 text-zinc-500 cursor-not-allowed border border-zinc-800"
-                    : "bg-red-600 hover:bg-red-500 text-white shadow-xl shadow-red-600/25 active:scale-[0.99]"
+                    ? "bg-zinc-900 text-zinc-500 cursor-not-allowed border border-white/5"
+                    : "bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white shadow-red-600/30 hover:shadow-red-600/50 active:scale-[0.99]"
                 }`}
               >
                 {isLoading ? (
@@ -326,49 +347,54 @@ export function AuditDashboard() {
             </div>
           </div>
 
-          {/* Right Panel: Minimalist High-Density Dashboard */}
+          {/* Right Panel: High-End Engineering Telemetry Dashboard */}
           <div className="lg:col-span-7">
             {auditResult ? (
               <div className="space-y-6">
-                {/* Top Metrics Row */}
+                {/* Top Metrics Row - Glassmorphic Cards with Neon Status Highlights */}
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                  {/* Score & Verdict Card */}
-                  <div className="bg-zinc-950 border border-zinc-900 rounded-2xl p-5 flex flex-col justify-between">
-                    <span className="text-[11px] font-medium tracking-wider uppercase text-zinc-500">
+                  {/* Score & Decision Card */}
+                  <div className="relative overflow-hidden bg-gradient-to-br from-zinc-900/80 via-zinc-950/90 to-black border border-white/10 rounded-2xl p-5 flex flex-col justify-between shadow-2xl group hover:border-white/20 transition-all duration-300">
+                    <div className="absolute top-0 right-0 w-24 h-24 bg-red-500/10 rounded-full blur-2xl pointer-events-none" />
+                    <span className="text-[11px] font-semibold uppercase tracking-wider text-zinc-400">
                       Authenticity Score
                     </span>
-                    <div className="my-2">
-                      <span className="text-4xl font-extrabold text-white tracking-tight">
+                    <div className="my-2.5 flex items-baseline gap-2">
+                      <span className="text-4xl font-black text-white tracking-tight font-mono">
                         {auditResult.authenticityScore}%
                       </span>
                     </div>
                     <div>
                       {auditResult.decision === "REJECT" && (
-                        <span className="inline-block px-3 py-1 rounded-lg text-xs font-semibold bg-red-950 text-red-400 border border-red-900">
-                          REJECT
+                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-red-950/80 text-red-400 border border-red-800 shadow-sm">
+                          <span className="w-1.5 h-1.5 rounded-full bg-red-400 animate-pulse" />
+                          <span>HIGH RISK REJECT</span>
                         </span>
                       )}
                       {auditResult.decision === "PROCEED" && (
-                        <span className="inline-block px-3 py-1 rounded-lg text-xs font-semibold bg-yellow-950 text-yellow-400 border border-yellow-900">
-                          PROCEED
+                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-950/80 text-amber-400 border border-amber-800 shadow-sm">
+                          <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
+                          <span>PROCEED W/ CAUTION</span>
                         </span>
                       )}
                       {auditResult.decision === "WORTHY" && (
-                        <span className="inline-block px-3 py-1 rounded-lg text-xs font-semibold bg-emerald-950 text-emerald-400 border border-emerald-900">
-                          WORTHY
+                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-950/80 text-emerald-400 border border-emerald-800 shadow-sm">
+                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                          <span>VERIFIED WORTHY</span>
                         </span>
                       )}
                     </div>
                   </div>
 
                   {/* Public Commits Card */}
-                  <div className="bg-zinc-950 border border-zinc-900 rounded-2xl p-5 flex flex-col justify-between">
-                    <span className="text-[11px] font-medium tracking-wider uppercase text-zinc-500 flex items-center gap-1.5">
+                  <div className="relative overflow-hidden bg-gradient-to-br from-zinc-900/80 via-zinc-950/90 to-black border border-white/10 rounded-2xl p-5 flex flex-col justify-between shadow-2xl group hover:border-white/20 transition-all duration-300">
+                    <div className="absolute top-0 right-0 w-24 h-24 bg-blue-500/10 rounded-full blur-2xl pointer-events-none" />
+                    <span className="text-[11px] font-semibold uppercase tracking-wider text-zinc-400 flex items-center gap-1.5">
                       <GitCommit className="w-3.5 h-3.5 text-zinc-400" />
                       Verified Commits
                     </span>
-                    <div className="my-2">
-                      <span className="text-3xl font-extrabold text-white font-mono">
+                    <div className="my-2.5">
+                      <span className="text-3xl font-black text-white font-mono">
                         {auditResult.commitsCount}
                       </span>
                     </div>
@@ -378,145 +404,203 @@ export function AuditDashboard() {
                   </div>
 
                   {/* Lines Touched Card */}
-                  <div className="bg-zinc-950 border border-zinc-900 rounded-2xl p-5 flex flex-col justify-between">
-                    <span className="text-[11px] font-medium tracking-wider uppercase text-zinc-500 flex items-center gap-1.5">
+                  <div className="relative overflow-hidden bg-gradient-to-br from-zinc-900/80 via-zinc-950/90 to-black border border-white/10 rounded-2xl p-5 flex flex-col justify-between shadow-2xl group hover:border-white/20 transition-all duration-300">
+                    <div className="absolute top-0 right-0 w-24 h-24 bg-purple-500/10 rounded-full blur-2xl pointer-events-none" />
+                    <span className="text-[11px] font-semibold uppercase tracking-wider text-zinc-400 flex items-center gap-1.5">
                       <Code2 className="w-3.5 h-3.5 text-zinc-400" />
                       Lines of Code
                     </span>
-                    <div className="my-2">
-                      <span className="text-3xl font-extrabold text-white font-mono">
+                    <div className="my-2.5">
+                      <span className="text-3xl font-black text-white font-mono">
                         {auditResult.linesCount.toLocaleString()}
                       </span>
                     </div>
-                    <span className="text-xs text-zinc-400 truncate">
+                    <span className="text-xs text-zinc-400 truncate font-mono">
                       {auditResult.dominantDomain}
                     </span>
                   </div>
                 </div>
 
-                {/* Project Audit Cards */}
+                {/* Project Audit Cards with Contemporary UI/UX */}
                 <div className="space-y-4">
                   <div className="flex items-center justify-between px-1">
-                    <h3 className="text-sm font-semibold text-zinc-300">
-                      Audited Projects ({auditResult.claims.length})
-                    </h3>
-                    <div className="flex items-center gap-3 text-xs font-mono text-zinc-500">
-                      <span className="text-emerald-400">
+                    <div className="flex items-center gap-2">
+                      <FolderGit2 className="w-4 h-4 text-red-500" />
+                      <h3 className="text-sm font-bold uppercase tracking-wider text-zinc-200">
+                        Audited Projects ({auditResult.claims.length})
+                      </h3>
+                    </div>
+                    <div className="flex items-center gap-3 text-xs font-mono">
+                      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-950/60 text-emerald-400 border border-emerald-800/80">
+                        <Check className="w-3 h-3" />
                         {auditResult.claims.filter((c) => c.verdict === "VERIFIED").length} Verified
                       </span>
                       {auditResult.claims.some((c) => c.verdict === "NOT_AUDITABLE") && (
-                        <span className="text-zinc-400">
-                          {auditResult.claims.filter((c) => c.verdict === "NOT_AUDITABLE").length} Commercial/NDA
+                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-zinc-900 text-zinc-400 border border-zinc-800">
+                          <Shield className="w-3 h-3 text-zinc-400" />
+                          {auditResult.claims.filter((c) => c.verdict === "NOT_AUDITABLE").length} Commercial / NDA
                         </span>
                       )}
                     </div>
                   </div>
 
-                  <div className="space-y-3.5">
-                    {auditResult.claims.map((c, i) => (
-                      <div
-                        key={i}
-                        className="bg-zinc-950 border border-zinc-900 hover:border-zinc-800 rounded-2xl p-5 transition-colors space-y-4 shadow-sm"
-                      >
-                        {/* Project Header + Verdict Badge */}
-                        <div className="flex items-start justify-between gap-4">
-                          <div className="flex items-center gap-2.5 flex-wrap">
-                            <span className="text-base font-bold text-white tracking-tight">
-                              {c.project}
-                            </span>
-                            {c.targetRepo && (
-                              <a
-                                href={`https://github.com/${c.targetRepo}`}
-                                target="_blank"
-                                rel="noreferrer"
-                                className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-mono bg-zinc-900 text-zinc-300 hover:text-white border border-zinc-800 transition-colors"
-                              >
-                                <span>{c.targetRepo}</span>
-                                <ExternalLink className="w-3 h-3 text-zinc-500" />
-                              </a>
-                            )}
-                          </div>
+                  <div className="space-y-4">
+                    {auditResult.claims.map((c, i) => {
+                      // Visual verdict configurations
+                      const isVerified = c.verdict === "VERIFIED";
+                      const isPartial = c.verdict === "PARTIALLY_VERIFIED";
+                      const isNda = c.verdict === "NOT_AUDITABLE";
+                      const isUnverified = c.verdict === "UNVERIFIED";
 
-                          {/* 4-State Verdict Badges */}
-                          <div>
-                            {c.verdict === "VERIFIED" && (
-                              <span className="shrink-0 px-2.5 py-1 rounded-md text-xs font-semibold bg-emerald-950/80 text-emerald-400 border border-emerald-900 flex items-center gap-1.5">
-                                <CheckCircle2 className="w-3.5 h-3.5" />
-                                <span>VERIFIED</span>
-                              </span>
-                            )}
-                            {c.verdict === "PARTIALLY_VERIFIED" && (
-                              <span className="shrink-0 px-2.5 py-1 rounded-md text-xs font-semibold bg-amber-950/80 text-amber-400 border border-amber-900 flex items-center gap-1.5">
-                                <AlertTriangle className="w-3.5 h-3.5" />
-                                <span>PARTIALLY VERIFIED</span>
-                              </span>
-                            )}
-                            {c.verdict === "NOT_AUDITABLE" && (
-                              <span className="shrink-0 px-2.5 py-1 rounded-md text-xs font-semibold bg-zinc-900 text-zinc-400 border border-zinc-700 flex items-center gap-1.5">
-                                <ShieldAlert className="w-3.5 h-3.5 text-zinc-400" />
-                                <span>NOT AUDITABLE (COMMERCIAL / NDA)</span>
-                              </span>
-                            )}
-                            {c.verdict === "UNVERIFIED" && (
-                              <span className="shrink-0 px-2.5 py-1 rounded-md text-xs font-semibold bg-red-950/80 text-red-400 border border-red-900 flex items-center gap-1.5">
-                                <XCircle className="w-3.5 h-3.5" />
-                                <span>UNVERIFIED</span>
-                              </span>
-                            )}
-                          </div>
-                        </div>
+                      const borderTopClass = isVerified
+                        ? "border-t-2 border-t-emerald-500 shadow-[0_0_30px_rgba(16,185,129,0.06)]"
+                        : isPartial
+                        ? "border-t-2 border-t-amber-500 shadow-[0_0_30px_rgba(245,158,11,0.06)]"
+                        : isNda
+                        ? "border-t-2 border-t-zinc-600 shadow-[0_0_30px_rgba(113,113,122,0.06)]"
+                        : "border-t-2 border-t-red-500 shadow-[0_0_30px_rgba(239,68,68,0.06)]";
 
-                        {/* Claim -> Evidence Structured Presentation */}
-                        <div className="space-y-2.5 text-xs">
-                          <div>
-                            <span className="text-[10px] uppercase font-bold tracking-wider text-zinc-500 block mb-0.5">
-                              Claim
-                            </span>
-                            <p className="text-sm text-zinc-200 leading-relaxed font-sans">
-                              "{c.claim}"
-                            </p>
-                          </div>
+                      return (
+                        <div
+                          key={i}
+                          className={`bg-gradient-to-b from-zinc-900/70 via-zinc-950/90 to-black border border-white/10 hover:border-white/20 rounded-2xl p-6 transition-all duration-300 space-y-5 shadow-xl relative overflow-hidden group ${borderTopClass}`}
+                        >
+                          {/* Ambient background glow */}
+                          {isVerified && (
+                            <div className="absolute top-0 right-0 w-48 h-48 bg-emerald-500/5 rounded-full blur-3xl pointer-events-none" />
+                          )}
+                          {isPartial && (
+                            <div className="absolute top-0 right-0 w-48 h-48 bg-amber-500/5 rounded-full blur-3xl pointer-events-none" />
+                          )}
+                          {isUnverified && (
+                            <div className="absolute top-0 right-0 w-48 h-48 bg-red-500/5 rounded-full blur-3xl pointer-events-none" />
+                          )}
 
-                          <div>
-                            <span className="text-[10px] uppercase font-bold tracking-wider text-zinc-500 block mb-1">
-                              Evidence
-                            </span>
-                            <div className="bg-black rounded-xl p-3.5 border border-zinc-900 space-y-1.5 font-mono text-zinc-300">
-                              {c.evidence && c.evidence.length > 0 ? (
-                                c.evidence.map((ev, idx) => (
-                                  <div key={idx} className="flex items-start gap-2">
-                                    <span className="text-zinc-600 select-none">•</span>
-                                    <span>{ev}</span>
-                                  </div>
-                                ))
+                          {/* Card Header: Project Name, Clickable Repo Pill, Verdict Badge */}
+                          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-1 border-b border-white/5">
+                            <div className="flex items-center gap-3 flex-wrap">
+                              <span className="text-base font-bold text-white tracking-tight">
+                                {c.project}
+                              </span>
+                              {c.targetRepo ? (
+                                <a
+                                  href={`https://github.com/${c.targetRepo}`}
+                                  target="_blank"
+                                  rel="noreferrer"
+                                  className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono bg-zinc-900/90 hover:bg-zinc-800 text-zinc-300 hover:text-white border border-white/10 hover:border-white/25 transition-all duration-200 shadow-sm group/link"
+                                >
+                                  <GitBranch className="w-3 h-3 text-zinc-500 group-hover/link:text-red-400 transition-colors" />
+                                  <span>{c.targetRepo}</span>
+                                  <ExternalLink className="w-2.5 h-2.5 text-zinc-500 group-hover/link:translate-x-0.5 group-hover/link:-translate-y-0.5 transition-transform" />
+                                </a>
                               ) : (
-                                <div className="text-zinc-400">{c.reality}</div>
+                                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-mono bg-zinc-900/50 text-zinc-500 border border-white/5">
+                                  No public repo linked
+                                </span>
+                              )}
+                            </div>
+
+                            {/* Contemporary Luminous Verdict Badges */}
+                            <div>
+                              {isVerified && (
+                                <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold bg-emerald-950/80 text-emerald-400 border border-emerald-800/80 shadow-[0_0_15px_rgba(16,185,129,0.15)]">
+                                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                                  <CheckCircle2 className="w-3.5 h-3.5" />
+                                  <span>VERIFIED</span>
+                                </span>
+                              )}
+                              {isPartial && (
+                                <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold bg-amber-950/80 text-amber-400 border border-amber-800/80 shadow-[0_0_15px_rgba(245,158,11,0.15)]">
+                                  <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
+                                  <AlertTriangle className="w-3.5 h-3.5" />
+                                  <span>PARTIALLY VERIFIED</span>
+                                </span>
+                              )}
+                              {isNda && (
+                                <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold bg-zinc-900/90 text-zinc-400 border border-zinc-700 shadow-sm">
+                                  <ShieldAlert className="w-3.5 h-3.5 text-zinc-400" />
+                                  <span>COMMERCIAL / NDA</span>
+                                </span>
+                              )}
+                              {isUnverified && (
+                                <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold bg-red-950/80 text-red-400 border border-red-800/80 shadow-[0_0_15px_rgba(239,68,68,0.15)]">
+                                  <span className="w-1.5 h-1.5 rounded-full bg-red-400 animate-pulse" />
+                                  <XCircle className="w-3.5 h-3.5" />
+                                  <span>UNVERIFIED</span>
+                                </span>
                               )}
                             </div>
                           </div>
+
+                          {/* Two-Tier Content: Resume Claim Citation & Telemetry Grounded Evidence */}
+                          <div className="space-y-3.5">
+                            {/* 1. Resume Claim Citation */}
+                            <div className="bg-white/[0.02] border-l-2 border-red-500/70 rounded-r-xl p-3.5 space-y-1">
+                              <span className="text-[10px] font-bold tracking-wider uppercase text-zinc-400 flex items-center gap-1.5">
+                                <FileCode className="w-3 h-3 text-red-400" />
+                                <span>Resume Claim</span>
+                              </span>
+                              <p className="text-xs text-zinc-200 leading-relaxed font-sans pl-0.5">
+                                "{c.claim}"
+                              </p>
+                            </div>
+
+                            {/* 2. Grounded Telemetry Evidence Terminal Box */}
+                            <div className="bg-black/80 rounded-xl border border-white/10 p-4 space-y-2.5">
+                              <div className="flex items-center justify-between border-b border-white/5 pb-2">
+                                <span className="text-[10px] font-mono uppercase tracking-wider text-zinc-400 flex items-center gap-1.5">
+                                  <Terminal className="w-3 h-3 text-zinc-400" />
+                                  <span>telemetry.grounding_audit</span>
+                                </span>
+                                <span className="text-[10px] font-mono text-zinc-500">
+                                  confidence: {c.confidence || "HIGH"}
+                                </span>
+                              </div>
+
+                              <div className="space-y-1.5 font-mono text-xs">
+                                {c.evidence && c.evidence.length > 0 ? (
+                                  c.evidence.map((ev, idx) => (
+                                    <div
+                                      key={idx}
+                                      className="flex items-start gap-2.5 text-zinc-300 leading-relaxed py-0.5"
+                                    >
+                                      <span className="text-emerald-400 shrink-0 mt-0.5 select-none font-bold">
+                                        ✓
+                                      </span>
+                                      <span className="break-words">{ev}</span>
+                                    </div>
+                                  ))
+                                ) : (
+                                  <div className="text-zinc-500 italic py-1">
+                                    {c.reality || "No commit telemetry found."}
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          </div>
                         </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 </div>
 
-                {/* PDF Report Export */}
+                {/* PDF Report Export Button */}
                 <button
                   onClick={handleDownloadPdf}
-                  className="w-full py-3.5 bg-zinc-950 hover:bg-zinc-900 text-white rounded-xl text-sm font-semibold border border-zinc-800 flex items-center justify-center gap-2 transition-colors"
+                  className="w-full py-3.5 bg-gradient-to-r from-zinc-900 to-zinc-950 hover:from-zinc-800 hover:to-zinc-900 text-white rounded-xl text-sm font-semibold border border-white/10 hover:border-white/20 shadow-xl flex items-center justify-center gap-2 transition-all duration-200 active:scale-[0.99]"
                 >
                   <Download className="w-4 h-4 text-zinc-400" />
-                  <span>Download Audit PDF Report</span>
+                  <span>Download Verified Engineering Audit PDF</span>
                 </button>
               </div>
             ) : (
-              <div className="min-h-[440px] border-2 border-dashed border-zinc-900 rounded-2xl flex flex-col items-center justify-center text-center p-10 bg-zinc-950/30">
-                <div className="w-14 h-14 rounded-2xl bg-zinc-900/60 border border-zinc-800 flex items-center justify-center mb-3">
-                  <FileCode className="w-7 h-7 text-zinc-500" />
+              <div className="min-h-[460px] border-2 border-dashed border-white/10 rounded-2xl flex flex-col items-center justify-center text-center p-10 bg-zinc-950/40 backdrop-blur-xl">
+                <div className="w-16 h-16 rounded-2xl bg-zinc-900/80 border border-white/10 flex items-center justify-center mb-4 shadow-xl">
+                  <FileCode className="w-8 h-8 text-zinc-500" />
                 </div>
-                <h4 className="text-base font-semibold text-zinc-200">Awaiting Resume Document</h4>
-                <p className="text-xs text-zinc-500 max-w-sm mt-1.5 leading-relaxed">
-                  Upload a PDF resume to audit project claims against live commit telemetry on GitHub.
+                <h4 className="text-base font-bold text-zinc-200">Awaiting Candidate Document</h4>
+                <p className="text-xs text-zinc-500 max-w-sm mt-2 leading-relaxed">
+                  Upload a candidate resume PDF to trigger deep repository discovery, commit telemetry ingestion, and AI claim verification.
                 </p>
               </div>
             )}
