@@ -654,3 +654,5 @@ export const Component = () => {
     </div>
   );
 };
+
+export const HeroSection = Component;
