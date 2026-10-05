@@ -1,20 +1,25 @@
 {
-  "name": "app-temp",
+  "name": "ada-talent",
   "version": "0.1.0",
+  "description": "ADA — Autonomous Talent & Git Claim Verification Engine",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "concurrently -n \"BACKEND,FRONTEND\" -c \"red,cyan\" \"node backend/server.js\" \"next dev\"",
+    "start": "concurrently -n \"BACKEND,FRONTEND\" -c \"red,cyan\" \"node backend/server.js\" \"next start\"",
     "build": "next build",
-    "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "test": "npm run test --prefix backend",
+    "test:backend": "npm run test --prefix backend"
   },
   "dependencies": {
     "@base-ui/react": "^1.6.0",
     "@types/three": "^0.185.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "concurrently": "^9.1.2",
     "framer-motion": "^12.42.2",
     "gsap": "^3.15.0",
+    "jspdf": "^4.2.1",
     "lenis": "^1.3.25",
     "lucide-react": "^1.26.0",
     "next": "16.2.11",
